@@ -42,7 +42,7 @@ func Run(cfg *Config) (err error) {
 	if cfg.CPUPercent > 0 || cfg.CPUCore > 0 {
 		isInUse = true
 
-		useCPU(cfg.CPUPercent, cfg.CPUCore)
+		go useCPU(cfg.CPUPercent, cfg.CPUCore)
 	}
 
 	if !isInUse {
@@ -53,6 +53,7 @@ func Run(cfg *Config) (err error) {
 	for {
 		printMemUsage()
 
+		// log.Println(cfg.data[memorySize-1])
 		time.Sleep(time.Second)
 	}
 
