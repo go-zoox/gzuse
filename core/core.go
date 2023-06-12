@@ -19,15 +19,22 @@ type Config struct {
 	CPUCore       uint   `json:"cpu_cores"`
 }
 
-func Run(cfg *Config) error {
+func Run(cfg *Config) (err error) {
 	isInUse := false
+	memorySize := uint64(0)
 
 	if cfg.MemorySize != "" || cfg.MemoryPercent != 0 {
 		isInUse = true
 
-		if err := useMemory(cfg.MemoryPercent, cfg.MemorySize); err != nil {
+		memorySize, err = useMemory(cfg.MemoryPercent, cfg.MemorySize)
+		if err != nil {
 			return err
 		}
+	}
+
+	data := make([]byte, memorySize)
+	for i := uint64(0); i < memorySize; i++ {
+		data[i] = byte(i % 256)
 	}
 
 	if cfg.CPUPercent > 0 || cfg.CPUCore > 0 {
@@ -48,12 +55,12 @@ func Run(cfg *Config) error {
 	// return nil
 }
 
-func useMemory(percent uint, size string) (err error) {
+func useMemory(percent uint, size string) (byteSize uint64, err error) {
 	var sizeX uint64 = 0
 	if size != "" {
 		sizeX, err = humanize.ParseBytes(size)
 		if err != nil {
-			return fmt.Errorf("invalid memory(%s): %s", size, err)
+			return 0, fmt.Errorf("invalid memory(%s): %s", size, err)
 		}
 
 		logger.Infof("[memory][size] %s", size)
@@ -69,12 +76,7 @@ func useMemory(percent uint, size string) (err error) {
 		logger.Infof("[memory][percent] %d%% (size: %s)", percent, humanize.Bytes(sizeX))
 	}
 
-	data := make([]byte, sizeX)
-	for i := uint64(0); i < sizeX; i++ {
-		data[i] = byte(i % 256)
-	}
-
-	return nil
+	return sizeX, nil
 }
 
 func useCPU(percent uint, cores uint) error {
