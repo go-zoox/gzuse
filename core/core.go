@@ -53,7 +53,7 @@ func Run(cfg *Config) (err error) {
 	for {
 		printMemUsage()
 
-		// log.Println(cfg.data[memorySize-1])
+		cfg.data[memorySize-1] = byte(128)
 		time.Sleep(time.Second)
 	}
 
