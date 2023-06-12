@@ -51,6 +51,8 @@ func Run(cfg *Config) (err error) {
 
 	// 持续输出信息
 	for {
+		printMemUsage()
+
 		time.Sleep(time.Second)
 	}
 
@@ -109,6 +111,20 @@ func useCPU(percent uint, cores uint) error {
 	wg.Wait()
 
 	return nil
+}
+
+func printMemUsage() {
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+	// For info on each, see: https://golang.org/pkg/runtime/#MemStats
+	fmt.Printf("Alloc = %v MiB", bToMb(m.Alloc))
+	fmt.Printf("\tTotalAlloc = %v MiB", bToMb(m.TotalAlloc))
+	fmt.Printf("\tSys = %v MiB", bToMb(m.Sys))
+	fmt.Printf("\tNumGC = %v\n", m.NumGC)
+}
+
+func bToMb(b uint64) uint64 {
+	return b / 1024 / 1024
 }
 
 // 占用单个 CPU 核心指定百分比的函数
