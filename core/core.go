@@ -17,6 +17,8 @@ type Config struct {
 	CPUPercent    uint   `json:"cpu_percent"`
 	MemorySize    string `json:"memory_size"`
 	CPUCore       uint   `json:"cpu_cores"`
+	//
+	data []byte
 }
 
 func Run(cfg *Config) (err error) {
@@ -32,9 +34,9 @@ func Run(cfg *Config) (err error) {
 		}
 	}
 
-	data := make([]byte, memorySize)
+	cfg.data = make([]byte, memorySize)
 	for i := uint64(0); i < memorySize; i++ {
-		data[i] = byte(i % 256)
+		cfg.data[i] = byte(i % 256)
 	}
 
 	if cfg.CPUPercent > 0 || cfg.CPUCore > 0 {
